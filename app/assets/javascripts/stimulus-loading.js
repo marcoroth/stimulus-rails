@@ -30,12 +30,21 @@ function registerControllerFromPath(path, under, application) {
 
 // Lazy load controllers registered beneath the `under` path in the import map to the passed application instance.
 export function lazyLoadControllersFrom(under, application, element = document) {
+  markApplicationAsLazyLoaded(application)
   lazyLoadExistingControllers(under, application, element)
   lazyLoadNewControllers(under, application, element)
 }
 
 function lazyLoadExistingControllers(under, application, element) {
   queryControllerNamesWithin(element).forEach(controllerName => loadController(controllerName, under, application))
+}
+
+function markApplicationAsLazyLoaded(application) {
+  if (application && application.hasOwnProperty("lazyLoadingControllers")) {
+    application.lazyLoadingControllers = true
+  } else {
+    console.warn("Warning: Please upgrade your `stimulus-rails` gem version. This version of Stimulus might show false positive warnings for unregistered Stimulus controllers.")
+  }
 }
 
 function lazyLoadNewControllers(under, application, element) {
